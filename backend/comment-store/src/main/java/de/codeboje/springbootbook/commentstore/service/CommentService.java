@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import de.codeboje.springbootbook.model.CommentModel;
+import de.codeboje.springbootbook.model.Comment;
 
 public interface CommentService {
 
@@ -16,16 +16,18 @@ public interface CommentService {
      * @return returns the id of the model
      * @throws IOException when there are problems with the DB
      */
-    String put(CommentModel model) throws IOException;
+    String put(Comment model) throws IOException;
 
-    List<CommentModel> list(String pageId) throws IOException;
-
-    CommentModel get(String id);
+    List<Comment> list(String pageId) throws IOException;
     
-    List<CommentModel> listSpamComments(String pageId) throws IOException;
+    Page<Comment> list(String pageId, Pageable pageable) throws IOException;
+
+    Comment get(String id);
+    
+    List<Comment> listSpamComments(String pageId) throws IOException;
     
     void delete(String id);
     
-    Page<CommentModel> list(Pageable pageable);
+    Page<Comment> list(Pageable pageable);
 
 }

@@ -20,6 +20,5 @@
 		<module>spam-detection</module>
 		<module>comment-store</module>
 		<module>logging</module>
-		<module>commons</module>
 	</modules>
 </project>
