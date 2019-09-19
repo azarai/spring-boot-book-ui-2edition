@@ -15,21 +15,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import de.codeboje.springbootbook.commentstore.service.CommentService;
-import de.codeboje.springbootbook.model.CommentModel;
+import de.codeboje.springbootbook.model.Comment;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @WithMockUser(username="admin")
-@ActiveProfiles({ "test", "FS" })
 public class WriteControllerTest {
 
     @Autowired
@@ -41,18 +39,17 @@ public class WriteControllerTest {
     @Test
     public void testPost() throws Exception {
 
-        CommentModel model = setupDummyModel();
+        Comment model = setupDummyModel();
         
-        MvcResult result = this.mvc.perform(MockMvcRequestBuilders.post("/create")
+        MvcResult result = this.mvc.perform(MockMvcRequestBuilders.post("/api/comments")
                         .param("comment", model.getComment())
                         .param("pageId", model.getPageId())
                         .param("emailAddress", model.getEmailAddress())
-                        .param("username", model.getUsername())
-                        .with(csrf()))
-                    .andExpect(status().is(200)).andReturn();
+                        .param("username", model.getUsername()).with(csrf()))
+                    .andExpect(status().is(201)).andReturn();
         
         String id = result.getResponse().getContentAsString();
-        CommentModel dbModel = service.get(id);
+        Comment dbModel = service.get(id);
 		assertNotNull(dbModel);
 		assertEquals(model.getComment(), dbModel.getComment());
 		assertEquals(model.getPageId(), dbModel.getPageId());
@@ -65,8 +62,8 @@ public class WriteControllerTest {
 
     }
 
-    private CommentModel setupDummyModel() {
-    	CommentModel model = new CommentModel();
+    private Comment setupDummyModel() {
+    	Comment model = new Comment();
 		model.setUsername("testuser");
 		model.setId("dqe345e456rf34rw");
 		model.setPageId("product0815");
@@ -77,7 +74,7 @@ public class WriteControllerTest {
 
     @Test
     public void testDelete() throws Exception {
-    	CommentModel model = new CommentModel();
+    	Comment model = new Comment();
 		model.setUsername("testuser");
 		model.setId("dqe345e456rf34rw");
 		model.setPageId("product0815");
@@ -85,7 +82,7 @@ public class WriteControllerTest {
 		model.setComment("I am the comment");
         String id = service.put(model);
         
-        this.mvc.perform(delete("/" + id).with(csrf())).andExpect(status().isOk());
+        this.mvc.perform(delete("/api/comment/" + id).with(csrf())).andExpect(status().isOk());
         
         assertNull(service.get(model.getId()));        
     }

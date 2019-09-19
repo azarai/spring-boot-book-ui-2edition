@@ -8,20 +8,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import de.codeboje.springbootbook.commentstore.service.CommentService;
-import de.codeboje.springbootbook.model.CommentModel;
+import de.codeboje.springbootbook.model.Comment;
+import io.micrometer.core.instrument.MeterRegistry;
 
 
 @Controller
@@ -35,23 +35,15 @@ public class WriteController {
 	private CommentService service;
 
 	@Autowired
-	private CounterService counterService;
+	private MeterRegistry meterRegistry;
 
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	@ResponseStatus(value = HttpStatus.OK)
-	public @ResponseBody String create(@RequestParam("comment") final String comment,
-			@RequestParam("pageId") final String pageId,
-			@RequestParam("emailAddress") final String emailAddress,
-			@RequestParam("username") final String username) throws IOException {
+	@RequestMapping(value = "/comments", method = RequestMethod.POST)
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public @ResponseBody String create(@ModelAttribute Comment model) throws IOException {
 
-		counterService.increment("commentstore.post");
+		meterRegistry.counter("commentstore.post").increment();;
 
 		LOGGER.info("form post started");
-		CommentModel model = new CommentModel();
-		model.setPageId(pageId);
-		model.setEmailAddress(emailAddress);
-		model.setComment(comment);
-		model.setUsername(username);
 
 		String id = service.put(model);
 		
@@ -60,7 +52,7 @@ public class WriteController {
 		return id;
 	}
 	
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/comment/{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(value = HttpStatus.OK)
 	public void delete(@PathVariable(value = "id") String id,
 			HttpServletResponse response) throws IOException {
