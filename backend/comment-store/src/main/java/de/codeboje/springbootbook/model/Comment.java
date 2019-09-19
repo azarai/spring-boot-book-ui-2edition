@@ -1,23 +1,16 @@
 package de.codeboje.springbootbook.model;
 
 import java.io.Serializable;
-import java.util.Calendar;
+import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
-
-import de.codeboje.springbootbook.model.utils.UtcCalendarType;
 
 @Entity
 @Table(name = "comments_model", 
@@ -27,12 +20,7 @@ import de.codeboje.springbootbook.model.utils.UtcCalendarType;
 					 ) 
 		}
 )
-@TypeDefs({ 
-	@TypeDef(name = "calendarUTC", 
-			typeClass = UtcCalendarType.class, 
-			defaultForType = Calendar.class) 
-	})
-public class CommentModel implements Serializable {
+public class Comment implements Serializable {
 
 	private static final long serialVersionUID = 8926987149780391093L;
 
@@ -42,14 +30,13 @@ public class CommentModel implements Serializable {
 
 	@Version
 	private Integer version;
+	
+	@Column(columnDefinition = "TEXT")
+	private String comment;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Type(type = "calendarUTC")
-	private Calendar lastModificationDate;
+	private Instant lastModificationDate;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Type(type = "calendarUTC")
-	private Calendar creationDate;
+	private Instant creationDate;
 
 	@Column(length = 32)
 	private String pageId;
@@ -79,19 +66,16 @@ public class CommentModel implements Serializable {
 		this.emailAddress = emailAddress;
 	}
 
-	@Column(columnDefinition = "TEXT")
-	private String comment;
-
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
 		}
-		if (!(o instanceof CommentModel)) {
+		if (!(o instanceof Comment)) {
 
 			return false;
 		}
 
-		CommentModel other = (CommentModel) o;
+		Comment other = (Comment) o;
 
 		// if the id is missing, return false
 		if (id == null) {
@@ -106,7 +90,7 @@ public class CommentModel implements Serializable {
 		return comment;
 	}
 
-	public Calendar getCreationDate() {
+	public Instant getCreationDate() {
 		return creationDate;
 	}
 
@@ -114,7 +98,7 @@ public class CommentModel implements Serializable {
 		return id;
 	}
 
-	public Calendar getLastModificationDate() {
+	public Instant getLastModificationDate() {
 		return lastModificationDate;
 	}
 
@@ -142,7 +126,7 @@ public class CommentModel implements Serializable {
 		this.comment = comment;
 	}
 
-	public void setCreationDate(Calendar creationDate) {
+	public void setCreationDate(Instant creationDate) {
 		this.creationDate = creationDate;
 	}
 
@@ -150,7 +134,7 @@ public class CommentModel implements Serializable {
 		this.id = id;
 	}
 
-	public void setLastModificationDate(Calendar lastModificationDate) {
+	public void setLastModificationDate(Instant lastModificationDate) {
 		this.lastModificationDate = lastModificationDate;
 	}
 

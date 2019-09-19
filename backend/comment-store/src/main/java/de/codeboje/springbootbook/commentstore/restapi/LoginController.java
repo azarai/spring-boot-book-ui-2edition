@@ -13,7 +13,7 @@ import de.codeboje.springbootbook.commentstore.security.jwt.JWTGenerator;
 
 @Controller
 public class LoginController {
-	
+
 	@Autowired
 	private JWTGenerator jwtGen;
 

@@ -15,23 +15,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import de.codeboje.springbootbook.model.CommentModel;
+import de.codeboje.springbootbook.model.Comment;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest()
 public class CommentstoreServiceImplTest {
 
 	@Autowired
-	private CommentModelRepository repository;
+	private CommentRepository repository;
 
 	@Autowired
 	private CommentService service;
 
-	private CommentModel model;
+	private Comment model;
 
 	@Before
 	public void setup() {
-		model = new CommentModel();
+		model = new Comment();
 		model.setUsername("testuser");
 		model.setId("dqe345e456rf34rw");
 		model.setPageId("product0815");
@@ -44,7 +44,7 @@ public class CommentstoreServiceImplTest {
 	public void testPutAndGet() throws IOException {
 		service.put(model);
 
-		CommentModel dbModel = service.get(model.getId());
+		Comment dbModel = service.get(model.getId());
 		assertNotNull(dbModel);
 		assertEquals(model.getComment(), dbModel.getComment());
 		assertEquals(model.getId(), dbModel.getId());
@@ -60,14 +60,14 @@ public class CommentstoreServiceImplTest {
 	@Test
 	public void testListNotFound() throws IOException {
 		service.put(model);
-		List<CommentModel> r = service.list("sdfgsdwerwert");
+		List<Comment> r = service.list("sdfgsdwerwert");
 		assertTrue(r.isEmpty());
 	}
 
 	@Test
 	public void testList() throws IOException {
 		service.put(model);
-		List<CommentModel> r = service.list(model.getPageId());
+		List<Comment> r = service.list(model.getPageId());
 		assertNotNull(r);
 		assertEquals(1, r.size());
 		assertEquals(model.getId(), r.get(0).getId());
@@ -77,7 +77,7 @@ public class CommentstoreServiceImplTest {
 	public void testListspam() throws IOException {
 		model.setComment("I Love Viagra");
 		service.put(model);
-		List<CommentModel> r = service.listSpamComments(model.getPageId());
+		List<Comment> r = service.listSpamComments(model.getPageId());
 		assertNotNull(r);
 		assertEquals(1, r.size());
 		assertEquals(model.getId(), r.get(0).getId());
