@@ -1,12 +1,10 @@
 package de.codeboje.springbootbook.spamdetection.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 
 import de.codeboje.springbootbook.spamdetection.SpamDetector;
 
@@ -19,8 +17,7 @@ public class SimpleSpamDetector implements SpamDetector {
 	private List<String> spamWords = new ArrayList<String>();
 
 	public SimpleSpamDetector(String filename) throws IOException {
-		FileInputStream fis = new FileInputStream(new File(filename));
-		this.spamWords = IOUtils.readLines(fis);
+		this.spamWords = Files.readAllLines(new File(filename).toPath());
 	}
 
 	@Override
