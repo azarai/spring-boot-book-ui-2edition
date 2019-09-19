@@ -20,7 +20,7 @@ export class CommentService {
   }
 
   public deleteComment(comment) {
-     return this.http.delete(this.server + "/" + comment.id, this.getAuthHeader()).map(this.extractData);
+     return this.http.delete(this.server + "/comment/" + comment.id, this.getAuthHeader()).map(this.extractData);
   }
 
   private getAuthHeader() {

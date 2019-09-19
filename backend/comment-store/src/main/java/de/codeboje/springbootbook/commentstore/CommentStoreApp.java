@@ -8,12 +8,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.Primary;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.codeboje.springbootbook.commons.CommentstoreObjectMapper;
 import de.codeboje.springbootbook.logging.RequestContextLoggingFilter;
 
 /**
@@ -22,6 +19,7 @@ import de.codeboje.springbootbook.logging.RequestContextLoggingFilter;
  *
  */
 @SpringBootApplication
+@EnableSpringDataWebSupport
 @EnableTransactionManagement
 @ComponentScan(basePackages= {"de.codeboje.springbootbook"})
 //@EnableJpaRepositories(basePackages= {"de.codeboje.springbootbook"})
@@ -44,11 +42,5 @@ public class CommentStoreApp {
     public Filter initRequestContextLoggingFilter() {
         return new RequestContextLoggingFilter();
     }
-    
-    @Bean
-    @Primary
-    public ObjectMapper initObjectMapper() {
-        return new CommentstoreObjectMapper();
-    }
-    
+
 }

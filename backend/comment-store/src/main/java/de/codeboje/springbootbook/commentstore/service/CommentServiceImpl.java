@@ -1,7 +1,7 @@
 package de.codeboje.springbootbook.commentstore.service;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import de.codeboje.springbootbook.model.CommentModel;
+import de.codeboje.springbootbook.model.Comment;
 import de.codeboje.springbootbook.spamdetection.SpamDetector;
 
 @Service
@@ -22,11 +22,11 @@ public class CommentServiceImpl implements CommentService {
     private SpamDetector spamDetector;
 
     @Autowired
-    private CommentModelRepository repository;
+    private CommentRepository repository;
 
     @Override
     @Transactional
-    public String put(CommentModel model) throws IOException {
+    public String put(Comment model) throws IOException {
 
     	if (StringUtils.isEmpty(model.getId())) {
     		model.setId(UUID.randomUUID().toString());
@@ -37,46 +37,48 @@ public class CommentServiceImpl implements CommentService {
     		model.setSpam(true);
     	}
     	
-        final CommentModel dbModel = get(model.getId());
+        final Comment dbModel = get(model.getId());
         if (dbModel != null) {
             dbModel.setUsername(model.getUsername());
             dbModel.setComment(model.getComment());            
-            dbModel.setLastModificationDate(Calendar.getInstance());
+            dbModel.setLastModificationDate(Instant.now());
             repository.save(dbModel);
         }
         else {
-            model.setCreationDate(Calendar.getInstance());
-            model.setLastModificationDate(Calendar.getInstance());
+            model.setCreationDate(Instant.now());
+            model.setLastModificationDate(Instant.now());
             repository.save(model);
         }
         return model.getId();
     }
 
     @Override
-    public CommentModel get(String id) {
-        return repository.findOne(id);
+    public Comment get(String id) {
+        return repository.findById(id).orElse(null);
     }
 
     @Override
-    public List<CommentModel> list(String pageId) throws IOException {
+    public List<Comment> list(String pageId) throws IOException {
         return repository.findByPageId(pageId);
     }
 
 	@Override
-	public List<CommentModel> listSpamComments(String pageId)
+	public List<Comment> listSpamComments(String pageId)
 			throws IOException {
 		return repository.findByPageIdAndSpamIsTrue(pageId);
 	}
 
 	@Override
 	public void delete(String id) {
-		System.err.println(repository.findOne(id));
-		repository.delete(id);
+		repository.deleteById(id);
 	}
 
 	@Override
-	public Page<CommentModel> list(Pageable pageable) {
-		return repository.findAll(pageable);
+	public Page<Comment> list(String pageId, Pageable pageable) throws IOException {
+		return repository.findByPageId(pageId, pageable);
 	}
 
+    public Page<Comment> list(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
 }
